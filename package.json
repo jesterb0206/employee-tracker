@@ -1,0 +1,31 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "A command-line application to manage a company's employee database, using Node.js, Inquirer and MySQL.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesterb0206/employee-tracker.git"
+  },
+  "keywords": [
+    "CMS",
+    "Inquirer",
+    "MySQL",
+    "Node.js"
+  ],
+  "author": "Bradley Jester",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jesterb0206/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/jesterb0206/employee-tracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^9.1.4",
+    "mysql2": "^2.3.3"
+  }
+}
