@@ -1,33 +1,50 @@
+-- In the case that there's an existing database called company_db, delete that database --
+
 DROP DATABASE IF EXISTS company_db;
+
+-- Creates a new database called company_db --
+
 CREATE DATABASE company_db;
+
+-- Use the company_db as the default database for subsequent statements -- 
 
 USE company_db;
 
-CREATE TABLE department (
+-- Creates a new table within company_db called departments -- 
+
+CREATE TABLE departments (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30)
+    department_name VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE role (
+-- Creates a new table within company_db called roles --
+
+CREATE TABLE roles (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(30),
-    salary DECIMAL,
+    job_title VARCHAR(30) NOT NULL,
+    salary DECIMAL (15,2) NOT NULL,
     department_id INT,
     FOREIGN KEY (department_id),
-    REFERENCES department (id),
+    REFERENCES departments (id),
     ON DELETE SET NULL
 );
 
-CREATE TABLE employee (
+-- Creates a new table within company_db called employees --
+
+CREATE TABLE employees (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(30),
-    last_name VARCHAR(30),
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
     role_id INT,
+    department_id INT,
     manager_id INT,
+    FOREIGN KEY (department_id),
+    REFERENCES departments(id),
+    ON DELETE SET NULL
     FOREIGN KEY (role_id),
-    REFERENCES role(id),
+    REFERENCES roles(id),
     ON DELETE SET NULL,
     FOREIGN KEY (manager_id),
-    REFERENCES employee(id),
+    REFERENCES employees(id),
     ON DELETE SET NULL
 );
