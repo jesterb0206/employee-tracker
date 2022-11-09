@@ -94,3 +94,32 @@ async function viewAllEmployees() {
   }
   askFirstQuestion();
 }
+
+// Add a department //
+
+async function addDepartment() {
+  const { department } = await inquirer.prompt([
+    {
+      type: "input",
+      message: "Enter a name for the department you wish to add!",
+      name: "department",
+      validate: function (answer) {
+        if (answer.length < 1) {
+          return console.log(
+            "Please enter a name for the department you wish to add!"
+          );
+        }
+        return true;
+      },
+    },
+  ]);
+  try {
+    db.query(
+      `INSERT INTO departments (department_name) VALUES ("${department}")`
+    );
+    console.log(`${department} added to departments!`);
+  } catch (err) {
+    console.error(err);
+  }
+  askFirstQuestion();
+}
