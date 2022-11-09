@@ -123,3 +123,66 @@ async function addDepartment() {
   }
   askFirstQuestion();
 }
+
+// Add a role //
+
+async function addRole() {
+  let departments = await db.query("SELECT * FROM departments;");
+
+  let departmentList = departments.map((department) => {
+    return { name: department.department_name, value: department.id };
+  });
+
+  const { job_title, salary, department_id } = await inquirer.prompt([
+    {
+      type: "input",
+      message: "Enter the job title of the new role you wish to add!",
+      name: "job_title",
+      validate: function (answer) {
+        if (answer.length < 1) {
+          return console.log(
+            "Please enter the job title of the new role you wish to add!"
+          );
+        }
+        return true;
+      },
+    },
+    {
+      type: "input",
+      message: "Enter the salary of the new role you wish to add!",
+      name: "salary",
+      validate: function (answer) {
+        if (answer.length < 1) {
+          return console.log(
+            "Please enter the salary of the new role you wish to add!"
+          );
+        }
+        return true;
+      },
+    },
+    {
+      type: "list",
+      message: "Select a department for the new role you wish to add!",
+      choices: departmentList,
+      name: "department_id",
+      validate: function (answer) {
+        if (!answer) {
+          return console.log(
+            "Please select a department for the new role you wish to add!"
+          );
+        }
+        return true;
+      },
+    },
+  ]);
+
+  try {
+    await db.query(
+      `INSERT INTO roles (job_title, salary, department_id) VALUES ("${job_title}", "${salary}", "${department_id}")`
+    );
+    console.log(`${job_title} added to roles.`);
+  } catch (err) {
+    console.error(err);
+  }
+  askFirstQuestion();
+}
