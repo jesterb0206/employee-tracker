@@ -194,13 +194,13 @@ async function addEmployee() {
 
   let roles = await db.query("SELECT id, job_title FROM roles;");
 
-  // Map out list of roles and add the roll ID value to company_db
+  // Map out list of roles and add the roll ID value to company_db //
 
   let roleList = roles.map((role) => {
     return { name: role.job_title, value: role.id };
   });
 
-  // Select all of the current departments
+  // Select all of the current departments //
 
   let departments = await db.query("SELECT * FROM departments;");
 
@@ -208,13 +208,14 @@ async function addEmployee() {
     return { name: department.department_name, value: department.id };
   });
 
-  // An array of managers to select from is created
+  // An array of managers to select from is created //
 
   let managers = await db.query(
     "SELECT id, first_name, last_name FROM employees;"
   );
 
-  // Maps out list of managers according to their ID
+  // Maps out list of managers according to their ID //
+
   let managerList = managers.map((manager) => {
     return {
       name: manager.first_name + " " + manager.last_name,
@@ -293,7 +294,7 @@ async function addEmployee() {
       },
     ]);
 
-  // Add information to the employees table
+  // Add information to the employees table //
 
   try {
     await db.query(
@@ -305,3 +306,75 @@ async function addEmployee() {
   }
   askFirstQuestion();
 }
+
+// Update an employee's role //
+
+async function updateEmployee() {
+  // An array of employees to select from is created //
+
+  let employees = await db.query(
+    "SELECT id, first_name, last_name FROM employees;"
+  );
+
+  // Maps employees based on name as key and ID as value //
+
+  let employeesList = employees.map((employee) => {
+    return {
+      name: employee.first_name + " " + employee.last_name,
+      value: employee.id,
+    };
+  });
+
+  // Selects all of the current roles //
+
+  let roles = await db.query("SELECT id, job_title FROM roles;");
+
+  // Maps out a list of roles based on their ID //
+
+  let roleList = roles.map((role) => {
+    return { name: role.job.title, value: role.id };
+  });
+
+  const { employee_id, role_id } = await inquirer.prompt([
+    {
+      type: "list",
+      message: "Choose the employee who's role you wish to update!",
+      choices: employeesList,
+      name: "employee_id",
+      validate: function (answer) {
+        if (answer.length < 1) {
+          return console.log(
+            "Please choose the employee who's role you wish to update!"
+          );
+        }
+        return true;
+      },
+    },
+    {
+      type: "list",
+      message: "Choose the employee's new role.",
+      choices: roleList,
+      name: "role_id",
+      validate: function (answer) {
+        if (answer.length < 1) {
+          return console.log("Please choose the employee's new role!");
+        }
+        return true;
+      },
+    },
+  ]);
+
+  try {
+    await db.query(
+      `UPDATE employees SET role_id = ("${role_id}") WHERE id = "${employee_id}";`
+    );
+    console.log(`${employee_id} updated.`);
+  } catch (err) {
+    console.error(err);
+  }
+  askFirstQuestion();
+}
+
+// Launch application //
+
+askFirstQuestion();
