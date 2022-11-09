@@ -186,3 +186,122 @@ async function addRole() {
   }
   askFirstQuestion();
 }
+
+// Add an employee //
+
+async function addEmployee() {
+  // Select all current roles
+
+  let roles = await db.query("SELECT id, job_title FROM roles;");
+
+  // Map out list of roles and add the roll ID value to company_db
+
+  let roleList = roles.map((role) => {
+    return { name: role.job_title, value: role.id };
+  });
+
+  // Select all of the current departments
+
+  let departments = await db.query("SELECT * FROM departments;");
+
+  let departmentList = departments.map((department) => {
+    return { name: department.department_name, value: department.id };
+  });
+
+  // An array of managers to select from is created
+
+  let managers = await db.query(
+    "SELECT id, first_name, last_name FROM employees;"
+  );
+
+  // Maps out list of managers according to their ID
+  let managerList = managers.map((manager) => {
+    return {
+      name: manager.first_name + " " + manager.last_name,
+      value: manager.id,
+    };
+  });
+
+  const { first_name, last_name, role_id, department_id, manager_id } =
+    await inquirer.prompt([
+      {
+        type: "input",
+        message: "Enter the first name of the employee you wish to add!",
+        name: "first_name",
+        validate: function (answer) {
+          if (answer.length < 2) {
+            return console.log(
+              "Please enter the first name of the employee you wish to add!"
+            );
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        message: "Enter the last name of the employee you wish to add!",
+        name: "last_name",
+        validate: function (answer) {
+          if (answer.length < 1) {
+            return console.log(
+              "Please enter the last name of the employee you wish to add!"
+            );
+          }
+          return true;
+        },
+      },
+      {
+        type: "list",
+        message: "Select a role for the employee you wish to add!",
+        choices: roleList,
+        name: "role_id",
+        validate: function (answer) {
+          if (!answer) {
+            return console.log(
+              "Please select a role for the employee you wish to add!"
+            );
+          }
+          return true;
+        },
+      },
+      {
+        type: "list",
+        message: "Select a department for the employee you wish to add!",
+        choices: departmentList,
+        name: "department_id",
+        validate: function (answer) {
+          if (!answer) {
+            return console.log(
+              "Please select a department for the employee you wish to add!"
+            );
+          }
+          return true;
+        },
+      },
+      {
+        type: "list",
+        message: "Select a manager for the employee you wish to add!",
+        choices: managerList,
+        validate: function (answer) {
+          if (!answer) {
+            return console.log(
+              "Please select a manager for the employee you wish to add!"
+            );
+          }
+          return true;
+        },
+      },
+    ]);
+
+  // Add information to the employees table
+
+  try {
+    await db.query(
+      `INSERT INTO employees (first_name, last_name, role_id, department_id, manager_id) VALUES ("${first_name}", "${last_name}", "${role_id}", "${department_id}", "${manager_id}");`
+    );
+    console.log(`${first_name} ${last_name} added to employees.`);
+  } catch (err) {
+    console.error(err);
+  }
+  askFirstQuestion();
+}
