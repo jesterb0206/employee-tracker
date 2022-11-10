@@ -18,3 +18,23 @@
 Click on the video link below to learn how to use the MySQL Employee Tracker command-line application:
 
 [MySQL Employee Tracker Walkthrough Video Demonstration](assets/videos/employee-tracker-walkthrough-video.webm)
+
+## Contributing
+
+N/A
+
+## Tests
+
+N/A
+
+## Questions
+
+If you have any additional questions, you can reach me at:
+
+### GitHub
+
+[jesterb0206](https://www.github.com/jesterb0206)
+
+### Email
+
+jesterb@seattleu.edu
