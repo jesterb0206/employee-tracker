@@ -12,7 +12,7 @@ db.query = util.promisify(db.query);
 const firstQuestion = [
   {
     type: "list",
-    message: "What do you want to do?",
+    message: "What would you like to do?",
     choices: [
       "View all departments",
       "View all roles",
@@ -20,7 +20,7 @@ const firstQuestion = [
       "Add a department",
       "Add a role",
       "Add an employee",
-      "Update an employee role",
+      "Update an employee's role",
     ],
     name: "response",
     validate: function (answer) {
@@ -48,7 +48,7 @@ function askFirstQuestion() {
       addRole();
     } else if (response == "Add an employee") {
       addEmployee();
-    } else if (response == "Update an employee role") {
+    } else if (response == "Update an employee's role") {
       updateEmployee();
     }
   });
@@ -83,10 +83,10 @@ async function viewAllRoles() {
 async function viewAllEmployees() {
   try {
     var results = await db.query(`
-        SELECT employees.id, employees.first_name, employees.last_name, roles.salary, roles.job_title, departments.department_name, managers.first_name AS manager_first_name, managers.last_name AS manager_last_name
-        FROM employees
-        LEFT JOIN roles ON employees.role_id = roles.id
-        LEFT JOIN departments ON employees.department_id = departments.id
+        SELECT employees.id, employees.first_name, employees.last_name, roles.salary, roles.job_title, departments.department_name, managers.first_name AS manager_first_name, managers.last_name AS manager_last_name 
+        FROM employees 
+        LEFT JOIN roles ON employees.role_id = roles.id 
+        LEFT JOIN departments ON employees.department_id = departments.id 
         LEFT JOIN employees managers ON employees.manager_id = managers.id;`);
     console.table(results);
   } catch (err) {
@@ -104,7 +104,7 @@ async function addDepartment() {
       message: "Enter a name for the department you wish to add!",
       name: "department",
       validate: function (answer) {
-        if (answer.length < 1) {
+        if (answer.length < 3) {
           return console.log(
             "Please enter a name for the department you wish to add!"
           );
@@ -117,7 +117,7 @@ async function addDepartment() {
     db.query(
       `INSERT INTO departments (department_name) VALUES ("${department}")`
     );
-    console.log(`${department} added to departments!`);
+    console.log(`${department} added to Departments.`);
   } catch (err) {
     console.error(err);
   }
@@ -139,7 +139,7 @@ async function addRole() {
       message: "Enter the job title of the new role you wish to add!",
       name: "job_title",
       validate: function (answer) {
-        if (answer.length < 1) {
+        if (answer.length < 3) {
           return console.log(
             "Please enter the job title of the new role you wish to add!"
           );
@@ -152,7 +152,7 @@ async function addRole() {
       message: "Enter the salary of the new role you wish to add!",
       name: "salary",
       validate: function (answer) {
-        if (answer.length < 1) {
+        if (answer.length < 3) {
           return console.log(
             "Please enter the salary of the new role you wish to add!"
           );
@@ -180,7 +180,7 @@ async function addRole() {
     await db.query(
       `INSERT INTO roles (job_title, salary, department_id) VALUES ("${job_title}", "${salary}", "${department_id}")`
     );
-    console.log(`${job_title} added to roles.`);
+    console.log(`${job_title} added to Roles.`);
   } catch (err) {
     console.error(err);
   }
@@ -190,7 +190,7 @@ async function addRole() {
 // Add an employee //
 
 async function addEmployee() {
-  // Select all current roles
+  // Select all current roles //
 
   let roles = await db.query("SELECT id, job_title FROM roles;");
 
@@ -243,7 +243,7 @@ async function addEmployee() {
         message: "Enter the last name of the employee you wish to add!",
         name: "last_name",
         validate: function (answer) {
-          if (answer.length < 1) {
+          if (answer.length < 2) {
             return console.log(
               "Please enter the last name of the employee you wish to add!"
             );
@@ -283,6 +283,7 @@ async function addEmployee() {
         type: "list",
         message: "Select a manager for the employee you wish to add!",
         choices: managerList,
+        name: "manager_id",
         validate: function (answer) {
           if (!answer) {
             return console.log(
@@ -300,7 +301,7 @@ async function addEmployee() {
     await db.query(
       `INSERT INTO employees (first_name, last_name, role_id, department_id, manager_id) VALUES ("${first_name}", "${last_name}", "${role_id}", "${department_id}", "${manager_id}");`
     );
-    console.log(`${first_name} ${last_name} added to employees.`);
+    console.log(`${first_name} ${last_name} added to Employees.`);
   } catch (err) {
     console.error(err);
   }
@@ -310,7 +311,7 @@ async function addEmployee() {
 // Update an employee's role //
 
 async function updateEmployee() {
-  // An array of employees to select from is created //
+  /// An array of employees to select from is created //
 
   let employees = await db.query(
     "SELECT id, first_name, last_name FROM employees;"
@@ -332,7 +333,7 @@ async function updateEmployee() {
   // Maps out a list of roles based on their ID //
 
   let roleList = roles.map((role) => {
-    return { name: role.job.title, value: role.id };
+    return { name: role.job_title, value: role.id };
   });
 
   const { employee_id, role_id } = await inquirer.prompt([
@@ -342,7 +343,7 @@ async function updateEmployee() {
       choices: employeesList,
       name: "employee_id",
       validate: function (answer) {
-        if (answer.length < 1) {
+        if (answer.length < 3) {
           return console.log(
             "Please choose the employee who's role you wish to update!"
           );
@@ -356,7 +357,7 @@ async function updateEmployee() {
       choices: roleList,
       name: "role_id",
       validate: function (answer) {
-        if (answer.length < 1) {
+        if (answer.length < 3) {
           return console.log("Please choose the employee's new role!");
         }
         return true;
